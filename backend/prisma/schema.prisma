@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  user_id    Int       @id @default(autoincrement())
+  email      String    @unique
+  password   String
+  name       String
+  role       String    @default("user")
+  created_at DateTime  @default(now())
+  
+  workouts   workouts[]
+  goals      goals[]
+}
+
+model exercises {
+  exercise_id  Int       @id @default(autoincrement())
+  name         String
+  description  String?   @db.Text
+  video_url    String?
+  muscle_group String
+  
+  workouts     workouts[]
+  goals        goals[]
+}
+
+model workouts {
+  workout_id  Int       @id @default(autoincrement())
+  user_id     Int
+  exercise_id Int
+  weight      Float
+  reps        Int
+  sets        Int
+  notes       String?   @db.Text
+  date        DateTime  @default(now())
+  
+  user        users     @relation(fields: [user_id], references: [user_id])
+  exercise    exercises @relation(fields: [exercise_id], references: [exercise_id])
+}
+
+model goals {
+  goal_id       Int       @id @default(autoincrement())
+  user_id       Int
+  exercise_id   Int
+  target_weight Float?
+  target_reps   Int?
+  achieved      Boolean   @default(false)
+  created_at    DateTime  @default(now())
+  
+  user          users     @relation(fields: [user_id], references: [user_id])
+  exercise      exercises @relation(fields: [exercise_id], references: [exercise_id])
+}

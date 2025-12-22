@@ -29,8 +29,12 @@ export default {
         } else {
           // Save user to localStorage
           localStorage.setItem('user', JSON.stringify(data.user));
-          // Reload page to update navbar
-          window.location.href = '/dashboard';
+          
+          // Trigger event to update navbar
+          window.dispatchEvent(new CustomEvent('user-logged-in', { detail: data.user }));
+          
+          // Redirect to dashboard
+          this.$router.push('/dashboard');
         }
       } catch (err) {
         this.error = 'Server error. Please try again.';

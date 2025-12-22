@@ -12,6 +12,11 @@ export default {
     if (savedUser) {
       this.user = JSON.parse(savedUser);
     }
+
+    // Listen for login events
+    window.addEventListener('user-logged-in', (event) => {
+      this.user = event.detail;
+    });
   },
   methods: {
     logout() {

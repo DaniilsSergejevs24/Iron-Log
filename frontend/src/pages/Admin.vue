@@ -3,6 +3,7 @@ export default {
   name: 'Admin',
   data() {
     return {
+      user: null,
       exercises: [],
       users: [],
       showForm: false,
@@ -15,8 +16,24 @@ export default {
     }
   },
   async created() {
-    await this.fetchExercises();
-    await this.fetchUsers();
+    // Check if user is admin
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      this.user = JSON.parse(savedUser);
+      
+      if (this.user.role !== 'admin') {
+        // Not admin - redirect to home
+        alert('Access denied. Admin only.');
+        this.$router.push('/');
+        return;
+      }
+      
+      await this.fetchExercises();
+      await this.fetchUsers();
+    } else {
+      // Not logged in - redirect to login
+      this.$router.push('/login');
+    }
   },
   methods: {
     async fetchExercises() {

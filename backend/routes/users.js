@@ -28,6 +28,55 @@ router.get('/', async (req, res) => {
 });
 
 // ============================================
+// GET inactive users (no workout in 7 days)
+// GET /users/inactive
+// ============================================
+router.get('/inactive', async (req, res) => {
+  try {
+    // Get all users
+    const users = await prisma.users.findMany({
+      select: {
+        user_id: true,
+        email: true,
+        name: true,
+        workouts: {
+          orderBy: { date: 'desc' },
+          take: 1  // Get only the last workout
+        }
+      }
+    });
+
+    // Check which users are inactive (no workout in 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const inactiveUsers = users.filter(user => {
+      // If user has no workouts at all
+      if (user.workouts.length === 0) {
+        return true;
+      }
+      // If last workout is older than 7 days
+      const lastWorkoutDate = new Date(user.workouts[0].date);
+      return lastWorkoutDate < sevenDaysAgo;
+    });
+
+    // Return inactive users with their last workout info
+    const result = inactiveUsers.map(user => ({
+      user_id: user.user_id,
+      name: user.name,
+      email: user.email,
+      last_workout: user.workouts.length > 0 ? user.workouts[0].date : 'Never'
+    }));
+
+    res.json(result);
+
+  } catch (error) {
+    res.status(500).json({ error: "Server error: " + error.message });
+  }
+});
+
+
+// ============================================
 // GET single user profile
 // GET /users/:id
 // ============================================

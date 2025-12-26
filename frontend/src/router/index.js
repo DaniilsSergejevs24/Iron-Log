@@ -8,6 +8,7 @@ import Exercises from '@/pages/Exercises.vue'
 import Dashboard from '@/pages/Dashboard.vue'
 import Goals from '@/pages/Goals.vue'
 import Admin from '@/pages/Admin.vue'
+import Predictions from '@/pages/Predictions.vue'
 
 const routes = [
   {
@@ -44,6 +45,11 @@ const routes = [
     path: '/admin',
     name: 'admin',
     component: Admin
+  },
+  {
+    path: '/predictions',
+    name: 'predictions',
+    component: Predictions
   }
 ]
 

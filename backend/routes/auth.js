@@ -7,7 +7,6 @@ const prisma = new PrismaClient();
 
 // ============================================
 // REGISTER - Create new user account
-// POST /auth/register
 // ============================================
 router.post('/register', async (req, res) => {
   try {
@@ -27,7 +26,7 @@ router.post('/register', async (req, res) => {
     const newUser = await prisma.users.create({
       data: {
         email: email,
-        password: password,  // Note: In real app, we should hash this!
+        password: password,
         name: name,
         role: "user"
       }
@@ -50,7 +49,6 @@ router.post('/register', async (req, res) => {
 
 // ============================================
 // LOGIN - User login
-// POST /auth/login
 // ============================================
 router.post('/login', async (req, res) => {
   try {

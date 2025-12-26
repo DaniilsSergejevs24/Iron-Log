@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 
 // ============================================
 // GET all users (Admin only)
-// GET /users
 // ============================================
 router.get('/', async (req, res) => {
   try {
@@ -17,7 +16,6 @@ router.get('/', async (req, res) => {
         name: true,
         role: true,
         created_at: true
-        // Note: we don't select password for security
       }
     });
 
@@ -29,7 +27,6 @@ router.get('/', async (req, res) => {
 
 // ============================================
 // GET inactive users (no workout in 7 days)
-// GET /users/inactive
 // ============================================
 router.get('/inactive', async (req, res) => {
   try {
@@ -41,7 +38,7 @@ router.get('/inactive', async (req, res) => {
         name: true,
         workouts: {
           orderBy: { date: 'desc' },
-          take: 1  // Get only the last workout
+          take: 1
         }
       }
     });
@@ -78,7 +75,6 @@ router.get('/inactive', async (req, res) => {
 
 // ============================================
 // GET single user profile
-// GET /users/:id
 // ============================================
 router.get('/:id', async (req, res) => {
   try {
@@ -105,7 +101,6 @@ router.get('/:id', async (req, res) => {
 
 // ============================================
 // UPDATE user profile
-// PUT /users/:id
 // ============================================
 router.put('/:id', async (req, res) => {
   try {
@@ -136,7 +131,6 @@ router.put('/:id', async (req, res) => {
 
 // ============================================
 // DELETE user (Admin only)
-// DELETE /users/:id
 // ============================================
 router.delete('/:id', async (req, res) => {
   try {

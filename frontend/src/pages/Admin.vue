@@ -3,18 +3,19 @@ export default {
   name: 'Admin',
   data() {
     return {
-      user: null,
-      exercises: [],
-      users: [],
-      showForm: false,
-      newExercise: {
-        name: '',
-        description: '',
-        video_url: '',
-        muscle_group: ''
-      }
+        user: null,
+        exercises: [],
+        users: [],
+        showForm: false,
+        editingExercise: null,
+        newExercise: {
+            name: '',
+            description: '',
+            video_url: '',
+            muscle_group: ''
+        }
     }
-  },
+},
   async created() {
     // Check if user is admin
     const savedUser = localStorage.getItem('user');
@@ -88,6 +89,52 @@ export default {
           console.error('Error:', err);
         }
       }
+    },
+
+    // Edit exercise - load data into form
+    editExercise(exercise) {
+    this.editingExercise = exercise.exercise_id;
+    this.newExercise = {
+        name: exercise.name,
+        description: exercise.description || '',
+        video_url: exercise.video_url || '',
+        muscle_group: exercise.muscle_group
+    };
+    this.showForm = true;
+    },
+
+    // Cancel editing
+    cancelEdit() {
+    this.editingExercise = null;
+    this.newExercise = { name: '', description: '', video_url: '', muscle_group: '' };
+    this.showForm = false;
+    },
+
+    // Save exercise (create or update)
+    async saveExercise() {
+    try {
+        let url = 'http://localhost:3000/exercises';
+        let method = 'POST';
+
+        // If editing, use PUT method
+        if (this.editingExercise) {
+        url = `http://localhost:3000/exercises/${this.editingExercise}`;
+        method = 'PUT';
+        }
+
+        const response = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.newExercise)
+        });
+
+        if (response.ok) {
+        await this.fetchExercises();
+        this.cancelEdit();
+        }
+    } catch (err) {
+        console.error('Error saving exercise:', err);
+    }
     }
   }
 }
@@ -101,12 +148,14 @@ export default {
     <section class="admin-section">
       <h2>Manage Exercises</h2>
       
-      <button @click="showForm = !showForm" class="btn btn-primary">
-        {{ showForm ? 'Cancel' : '+ Add Exercise' }}
+      <button @click="showForm = !showForm; editingExercise = null; newExercise = { name: '', description: '', video_url: '', muscle_group: '' }" class="btn btn-primary">
+        {{ showForm && !editingExercise ? 'Cancel' : '+ Add Exercise' }}
       </button>
 
+      <!-- Add/Edit Exercise Form -->
       <div v-if="showForm" class="exercise-form">
-        <form @submit.prevent="addExercise">
+        <h3>{{ editingExercise ? 'Edit Exercise' : 'Add New Exercise' }}</h3>
+        <form @submit.prevent="saveExercise">
           <div class="form-group">
             <label>Name:</label>
             <input type="text" v-model="newExercise.name" required />
@@ -117,22 +166,29 @@ export default {
           </div>
           <div class="form-group">
             <label>Description:</label>
-            <textarea v-model="newExercise.description"></textarea>
+            <textarea v-model="newExercise.description" rows="3"></textarea>
           </div>
           <div class="form-group">
             <label>Video URL:</label>
             <input type="text" v-model="newExercise.video_url" placeholder="YouTube link" />
           </div>
-          <button type="submit" class="btn btn-success">Save Exercise</button>
+          <div class="form-buttons">
+            <button type="button" @click="cancelEdit" class="btn btn-secondary">Cancel</button>
+            <button type="submit" class="btn btn-success">
+              {{ editingExercise ? 'Save Changes' : 'Add Exercise' }}
+            </button>
+          </div>
         </form>
       </div>
 
+      <!-- Exercises Table -->
       <table class="admin-table">
         <thead>
           <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Muscle Group</th>
+            <th>Video</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -142,6 +198,11 @@ export default {
             <td>{{ ex.name }}</td>
             <td>{{ ex.muscle_group }}</td>
             <td>
+              <span v-if="ex.video_url" class="has-video">✓ Yes</span>
+              <span v-else class="no-video">✗ No</span>
+            </td>
+            <td class="actions-cell">
+              <button @click="editExercise(ex)" class="btn-edit">Edit</button>
               <button @click="deleteExercise(ex.exercise_id)" class="btn-delete">Delete</button>
             </td>
           </tr>
@@ -168,7 +229,9 @@ export default {
             <td>{{ user.user_id }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ user.role }}</td>
+            <td>
+              <span :class="['role-badge', user.role]">{{ user.role }}</span>
+            </td>
             <td>
               <button @click="deleteUser(user.user_id)" class="btn-delete">Delete</button>
             </td>
@@ -263,5 +326,63 @@ export default {
 
 .admin-table th {
   background-color: #f5f5f5;
+}
+
+/* Form Buttons */
+.form-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  color: white;
+}
+
+/* Actions Cell */
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  background-color: #2980b9;
+}
+
+/* Video Column */
+.has-video {
+  color: #27ae60;
+  font-weight: 500;
+}
+
+.no-video {
+  color: #999;
+}
+
+/* Role Badge */
+.role-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.role-badge.admin {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.role-badge.user {
+  background-color: #3498db;
+  color: white;
 }
 </style>

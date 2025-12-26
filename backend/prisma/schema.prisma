@@ -9,40 +9,62 @@ datasource db {
 }
 
 model users {
-  user_id    Int       @id @default(autoincrement())
-  email      String    @unique
+  user_id    Int        @id @default(autoincrement())
+  email      String     @unique
   password   String
   name       String
-  role       String    @default("user")
-  created_at DateTime  @default(now())
+  role       String     @default("user")
+  created_at DateTime   @default(now())
   
   workouts   workouts[]
   goals      goals[]
 }
 
 model exercises {
-  exercise_id  Int       @id @default(autoincrement())
+  exercise_id  Int        @id @default(autoincrement())
   name         String
-  description  String?   @db.Text
+  description  String?    @db.Text
   video_url    String?
   muscle_group String
   
-  workouts     workouts[]
-  goals        goals[]
+  workout_exercises workout_exercises[]
+  goals            goals[]
 }
 
+// A workout session (e.g., "Monday Push Day")
 model workouts {
   workout_id  Int       @id @default(autoincrement())
   user_id     Int
-  exercise_id Int
-  weight      Float
-  reps        Int
-  sets        Int
-  notes       String?   @db.Text
+  name        String?   // Optional name like "Push Day"
   date        DateTime  @default(now())
+  notes       String?   @db.Text
   
-  user        users     @relation(fields: [user_id], references: [user_id])
-  exercise    exercises @relation(fields: [exercise_id], references: [exercise_id])
+  user              users               @relation(fields: [user_id], references: [user_id])
+  workout_exercises workout_exercises[]
+}
+
+// Exercises within a workout
+model workout_exercises {
+  workout_exercise_id Int      @id @default(autoincrement())
+  workout_id          Int
+  exercise_id         Int
+  order               Int      @default(0)
+  
+  workout  workouts  @relation(fields: [workout_id], references: [workout_id], onDelete: Cascade)
+  exercise exercises @relation(fields: [exercise_id], references: [exercise_id])
+  sets     sets[]
+}
+
+// Individual sets for each exercise
+model sets {
+  set_id              Int     @id @default(autoincrement())
+  workout_exercise_id Int
+  set_number          Int
+  weight              Float
+  reps                Int
+  completed           Boolean @default(false)
+  
+  workout_exercise workout_exercises @relation(fields: [workout_exercise_id], references: [workout_exercise_id], onDelete: Cascade)
 }
 
 model goals {
@@ -54,6 +76,6 @@ model goals {
   achieved      Boolean   @default(false)
   created_at    DateTime  @default(now())
   
-  user          users     @relation(fields: [user_id], references: [user_id])
-  exercise      exercises @relation(fields: [exercise_id], references: [exercise_id])
+  user     users     @relation(fields: [user_id], references: [user_id])
+  exercise exercises @relation(fields: [exercise_id], references: [exercise_id])
 }

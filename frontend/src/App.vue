@@ -37,15 +37,16 @@ export default {
         <router-link to="/">🏋️ IronLog</router-link>
       </div>
       <div class="nav-links">
-        <router-link to="/">Home</router-link>
-        <router-link to="/exercises">Exercises</router-link>
-        <router-link v-if="user" to="/dashboard">Dashboard</router-link>
-        <router-link v-if="user" to="/goals">Goals</router-link>
-        <router-link v-if="user && user.role === 'admin'" to="/admin">Admin</router-link>
-        <router-link v-if="!user" to="/login">Login</router-link>
-        <router-link v-if="!user" to="/register">Register</router-link>
-        <button v-if="user" @click="logout" class="logout-btn">Logout</button>
-      </div>
+      <router-link v-if="!user" to="/">Home</router-link>
+      <router-link v-if="user" to="/dashboard">Dashboard</router-link>
+      <router-link v-if="user" to="/exercises">Exercises</router-link>
+      <router-link v-if="user" to="/goals">Goals</router-link>
+      <router-link v-if="user" to="/predictions">Predictions</router-link>
+      <router-link v-if="user && user.role === 'admin'" to="/admin">Admin</router-link>
+      <router-link v-if="!user" to="/login">Login</router-link>
+      <router-link v-if="!user" to="/register">Register</router-link>
+      <button v-if="user" @click="logout" class="logout-btn">Logout</button>
+    </div>
     </nav>
 
     <!-- Page content -->

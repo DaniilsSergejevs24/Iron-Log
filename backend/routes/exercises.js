@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 
 // ============================================
 // GET all exercises
-// GET /exercises
 // ============================================
 router.get('/', async (req, res) => {
   try {
@@ -19,7 +18,6 @@ router.get('/', async (req, res) => {
 
 // ============================================
 // GET single exercise by ID
-// GET /exercises/:id
 // ============================================
 router.get('/:id', async (req, res) => {
   try {
@@ -39,7 +37,6 @@ router.get('/:id', async (req, res) => {
 
 // ============================================
 // CREATE new exercise (Admin only)
-// POST /exercises
 // ============================================
 router.post('/', async (req, res) => {
   try {
@@ -65,7 +62,6 @@ router.post('/', async (req, res) => {
 
 // ============================================
 // UPDATE exercise (Admin only)
-// PUT /exercises/:id
 // ============================================
 router.put('/:id', async (req, res) => {
   try {
@@ -92,7 +88,6 @@ router.put('/:id', async (req, res) => {
 
 // ============================================
 // DELETE exercise (Admin only)
-// DELETE /exercises/:id
 // ============================================
 router.delete('/:id', async (req, res) => {
   try {

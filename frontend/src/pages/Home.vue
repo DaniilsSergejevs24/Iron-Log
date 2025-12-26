@@ -1,6 +1,13 @@
 <script>
 export default {
-  name: 'Home'
+  name: 'Home',
+  created() {
+    // If user is logged in, redirect to Dashboard
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      this.$router.push('/dashboard');
+    }
+  }
 }
 </script>
 
@@ -11,8 +18,7 @@ export default {
       <p>Track your gym progress the smart way</p>
       <div class="hero-buttons">
         <router-link to="/register" class="btn btn-primary">Get Started</router-link>
-        <router-link to="/exercises" class="btn btn-secondary">Browse Exercises</router-link>
-      </div>
+        </div>
     </div>
 
     <div class="features">

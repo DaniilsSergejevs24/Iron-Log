@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 
 // ============================================
 // GET all goals for a user
-// GET /goals/user/:userId
 // ============================================
 router.get('/user/:userId', async (req, res) => {
   try {
@@ -23,7 +22,6 @@ router.get('/user/:userId', async (req, res) => {
 
 // ============================================
 // CREATE new goal
-// POST /goals
 // ============================================
 router.post('/', async (req, res) => {
   try {
@@ -51,7 +49,6 @@ router.post('/', async (req, res) => {
 
 // ============================================
 // UPDATE goal (mark as achieved)
-// PUT /goals/:id
 // ============================================
 router.put('/:id', async (req, res) => {
   try {
@@ -78,7 +75,6 @@ router.put('/:id', async (req, res) => {
 
 // ============================================
 // DELETE goal
-// DELETE /goals/:id
 // ============================================
 router.delete('/:id', async (req, res) => {
   try {

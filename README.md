@@ -13,10 +13,13 @@ IronLog is a web application that helps gym enthusiasts track their workout prog
 ### Features
 
 - **User Authentication** - Register and login to your personal account
-- **Workout Logging** - Track exercises with weight, reps, sets, and notes
+- **Workout Logging** - Track exercises with weight, reps, sets per exercise
 - **Exercise Database** - Browse exercises with descriptions and video tutorials
+- **Exercise Filters** - Filter exercises by muscle group
 - **Personal Goals** - Set fitness goals and track your progress
+- **Predictions** - View progress charts and predict future performance
 - **Admin Panel** - Manage exercises and users (admin only)
+- **Automation** - n8n workflow to remind inactive users
 
 ---
 
@@ -29,13 +32,16 @@ IronLog is a web application that helps gym enthusiasts track their workout prog
 - MySQL
 
 **Frontend:**
-- Vue.js
+- Vue.js 3
 - Vue Router
+- Chart.js (for predictions)
+
+**Automation:**
+- n8n
 
 ---
 
 ## 📁 Project Structure
-
 ```
 ironlog/
 ├── backend/
@@ -51,7 +57,19 @@ ironlog/
 │   └── index.js           # Main server file
 │
 └── frontend/
-    └── (Vue.js app)
+    └── src/
+        ├── pages/
+        │   ├── Home.vue
+        │   ├── Login.vue
+        │   ├── Register.vue
+        │   ├── Dashboard.vue
+        │   ├── Exercises.vue
+        │   ├── Goals.vue
+        │   ├── Predictions.vue
+        │   └── Admin.vue
+        ├── router/
+        │   └── index.js
+        └── App.vue
 ```
 
 ---
@@ -61,8 +79,9 @@ ironlog/
 ### Prerequisites
 
 - Node.js (v20+)
-- MySQL (MAMP recommended)
+- MySQL (MAMP)
 - npm
+- n8n (for automation)
 
 ### Backend Setup
 
@@ -111,26 +130,63 @@ npm install
 npm run dev
 ```
 
+Frontend runs on `http://localhost:5173`
+
+### n8n Setup (Automation)
+
+1. Start n8n:
+```bash
+n8n start
+```
+
+2. Open `http://localhost:5678`
+3. Create workflow to check inactive users
+
 ---
 
 ## 📡 API Endpoints
 
+### Authentication
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/auth/register` | Register new user |
 | POST | `/auth/login` | User login |
+
+### Exercises
+| Method | Endpoint | Description |
+|--------|----------|-------------|
 | GET | `/exercises` | Get all exercises |
-| POST | `/exercises` | Create exercise |
-| PUT | `/exercises/:id` | Update exercise |
-| DELETE | `/exercises/:id` | Delete exercise |
+| GET | `/exercises/:id` | Get single exercise |
+| POST | `/exercises` | Create exercise (admin) |
+| PUT | `/exercises/:id` | Update exercise (admin) |
+| DELETE | `/exercises/:id` | Delete exercise (admin) |
+
+### Workouts
+| Method | Endpoint | Description |
+|--------|----------|-------------|
 | GET | `/workouts/user/:userId` | Get user's workouts |
-| POST | `/workouts` | Log new workout |
-| PUT | `/workouts/:id` | Update workout |
+| POST | `/workouts` | Create new workout |
+| POST | `/workouts/:id/exercises` | Add exercise to workout |
+| POST | `/workouts/exercises/:id/sets` | Add set to exercise |
+| PUT | `/workouts/sets/:id` | Update set |
+| DELETE | `/workouts/sets/:id` | Delete set |
 | DELETE | `/workouts/:id` | Delete workout |
+
+### Goals
+| Method | Endpoint | Description |
+|--------|----------|-------------|
 | GET | `/goals/user/:userId` | Get user's goals |
 | POST | `/goals` | Create goal |
 | PUT | `/goals/:id` | Update goal |
 | DELETE | `/goals/:id` | Delete goal |
+
+### Users
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/users` | Get all users (admin) |
+| GET | `/users/:id` | Get single user |
+| GET | `/users/inactive` | Get inactive users (for n8n) |
+| DELETE | `/users/:id` | Delete user (admin) |
 
 ---
 
